@@ -1,15 +1,22 @@
-from flask import Flask , request, render_template,jsonify
+from flask import Flask, request, render_template, jsonify
 import joblib
 import pandas as pd
 import logging
 
-app= Flask(__name__)
-
+app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
-model= joblib.load('modelo_insectos.pkl')
-app.logger.debug('Modelo cargando correctamnete')
+# Carga el modelo entrenado
+model = joblib.load('random_forest_model.pkl')
+app.logger.debug('Random Forest cargado correctamente')
 
+# Mapeo de DESIGNATION (igual al entrenamiento)
+designation_map = {
+    'Data Engineer': 0,
+    'Data Scientist': 1,
+    'Machine Learning Engineer': 2,
+    'Business Analyst': 3
+}
 
 @app.route('/')
 def home():
@@ -18,23 +25,32 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        abdomen = float(request.form['abdomen'])
-        antena = float(request.form['antena'])
+        # Recibe JSON y parsea
+        data = request.get_json(force=True)
         
-        data_df = pd.DataFrame([[abdomen,antena]], columns=['abdomen', 'antena'])
-        app.logger.debug(f'DataFrame creado: {data_df}')
+        designation = data.get('designation')
+        tenure     = float(data.get('tenure', 0))
+        age        = float(data.get('age', 0))
+        exp        = float(data.get('exp', 0))
+        leaves     = float(data.get('leaves', 0))
         
-        prediction = model.predict(data_df)
-        app.logger.debug(f'Prediccion: {prediction[0]}')
-        
-        return jsonify({'categoria': prediction[0]})
-    
-    except Exception as e:
-        app.logger.error(f'Error en la prediccion: {str(e)}')
-        return jsonify({'error': str(e)}),400
-    
-    
+        # Valida y convierte DESIGNATION
+        if designation not in designation_map:
+            raise ValueError(f"Designación desconocida: {designation}")
+        desig_num = designation_map[designation]
 
-if __name__=='__main__':
+        # Construye DataFrame con el mismo orden de columnas
+        df = pd.DataFrame([[desig_num, tenure, age, exp, leaves]],
+                          columns=['DESIGNATION','TenureDays','AGE','PAST EXP','LEAVES USED'])
+        app.logger.debug(f'DataFrame para predecir:\n{df}')
+
+        # Predicción
+        salary = model.predict(df)[0]
+        return jsonify({'salary': round(float(salary), 2)})
+
+    except Exception as e:
+        app.logger.error(f'Error en la predicción: {e}')
+        return jsonify({'error': str(e)}), 400
+
+if __name__ == '__main__':
     app.run(debug=True)
-    
