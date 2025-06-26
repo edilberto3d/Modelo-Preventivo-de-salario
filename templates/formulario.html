@@ -3,150 +3,540 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Predicción de Salario</title>
+  <title>💰 Predictor de Salarios - Descubre tu Potencial</title>
   <style>
-    /* Reset, gradiente y tipografía */
-    * { box-sizing: border-box; margin:0; padding:0; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    /* Reset y variables */
+    :root {
+      --primary: #1a73e8;
+      --primary-dark: #1557b0;
+      --secondary: #34a853;
+      --accent: #fbbc04;
+      --danger: #ea4335;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card-shadow: 0 20px 60px rgba(0,0,0,0.1);
+      --input-shadow: 0 4px 15px rgba(26,115,232,0.15);
+    }
+    
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #6B73FF, #000DFF);
-      min-height:100vh; display:flex;
-      align-items:center; justify-content:center;
-      color:#333;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2d3748;
+      position: relative;
+      overflow-x: hidden;
     }
+    
+    /* Elementos decorativos de fondo */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(120,119,198,0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(120,119,198,0.2) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+      z-index: -1;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+      50% { transform: translate(-50%, -50%) rotate(180deg); }
+    }
+    
+    .main-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      max-width: 1200px;
+      width: 100%;
+      padding: 2rem;
+    }
+    
+    /* Header con estadísticas */
+    .header-section {
+      text-align: center;
+      color: white;
+      margin-bottom: 1rem;
+    }
+    
+    .main-title {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      background: linear-gradient(45deg, #fff, #e2e8f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      display: block;
+      color: var(--accent);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-top: 0.5rem;
+    }
+    
+    /* Formulario principal */
     .form-container {
-      background:#fff; padding:2rem;
-      border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.2);
-      width:100%; max-width:420px;
-      animation:fadeIn 0.6s ease-out;
-      position:relative;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 3rem;
+      border-radius: 24px;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+      animation: slideUp 0.8s ease-out;
     }
-    h2 {
-      text-align:center; margin-bottom:1.5rem;
-      color:#000DFF; text-shadow:1px 1px rgba(0,0,0,0.1);
+    
+    .form-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
     }
-    .form-group { margin-bottom:1rem; position:relative; }
-    label { display:block; margin-bottom:0.5rem; font-weight:bold; }
+    
+    .form-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    
+    .form-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .form-description {
+      color: #64748b;
+      font-size: 1rem;
+    }
+    
+    /* Grupos de formulario */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      position: relative;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .field-icon {
+      font-size: 1.2rem;
+    }
+    
     input, select {
-      width:100%; padding:0.75rem; border:1px solid #ccc;
-      border-radius:8px; font-size:1rem;
-      transition:border-color 0.3s, box-shadow 0.3s;
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      background: white;
     }
+    
     input:focus, select:focus {
-      border-color:#000DFF; box-shadow:0 0 8px rgba(0,13,255,0.2);
-      outline:none;
+      border-color: var(--primary);
+      box-shadow: var(--input-shadow);
+      outline: none;
+      transform: translateY(-2px);
     }
-    .error { border-color:#FF4136 !important; animation:shake 0.3s; }
+    
+    input:hover, select:hover {
+      border-color: #cbd5e1;
+    }
+    
+    .error {
+      border-color: var(--danger) !important;
+      box-shadow: 0 4px 15px rgba(234,67,53,0.15) !important;
+      animation: shake 0.5s ease-in-out;
+    }
+    
     .error-message {
-      color:#FF4136; font-size:0.85rem;
-      position:absolute; top:100%; left:0; margin-top:0.25rem;
-      display:none;
+      color: var(--danger);
+      font-size: 0.875rem;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 0.5rem;
+      display: none;
+      font-weight: 500;
     }
+    
+    .error-message::before {
+      content: '⚠️ ';
+    }
+    
+    /* Botón de envío */
+    .submit-section {
+      margin-top: 2.5rem;
+      text-align: center;
+    }
+    
     .btn-submit {
-      width:100%; padding:0.75rem; background:#000DFF;
-      color:#fff; font-size:1.1rem; font-weight:bold;
-      border:none; border-radius:8px; cursor:pointer;
-      transition:background 0.3s, transform 0.1s;
-      margin-top:1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 1rem 3rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 8px 25px rgba(26,115,232,0.3);
+      min-width: 200px;
+      justify-content: center;
     }
-    .btn-submit:hover { background:#6B73FF; }
-    .btn-submit:active { transform:scale(0.98); }
+    
+    .btn-submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(26,115,232,0.4);
+    }
+    
+    .btn-submit:active {
+      transform: translateY(-1px);
+    }
+    
+    .btn-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Resultado */
     .result-box {
-      margin-top:1rem; text-align:center;
-      font-size:1.3rem; color:#155724;
-      padding:0.75rem; border:1px solid #c3e6cb;
-      border-radius:8px; background:#d4edda;
-      animation:fadeIn 0.5s ease-out; display:none;
+      margin-top: 2rem;
+      padding: 2rem;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: none;
+      animation: slideUp 0.6s ease-out;
+      background: linear-gradient(135deg, var(--secondary), #2d7a3d);
+      color: white;
+      box-shadow: 0 8px 25px rgba(52,168,83,0.3);
+      position: relative;
+      overflow: hidden;
     }
-    @keyframes fadeIn {
-      from { opacity:0; transform:translateY(-10px); }
-      to   { opacity:1; transform:translateY(0); }
+    
+    .result-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: shimmer 2s infinite;
     }
+    
+    .salary-amount {
+      font-size: 2.5rem;
+      margin: 0.5rem 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    /* Animaciones */
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
     @keyframes shake {
-      0%,100% { transform:translateX(0); }
-      20%,60% { transform:translateX(-5px); }
-      40%,80% { transform:translateX(5px); }
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
-    @media(max-width:480px) {
-      .form-container { padding:1rem; }
-      .btn-submit { font-size:1rem; }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    /* Responsive */
+    @media (min-width: 768px) {
+      .main-container {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+      
+      .form-group:first-child,
+      .form-group:last-child {
+        grid-column: 1 / -1;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .main-title {
+        font-size: 2rem;
+      }
+      
+      .form-container {
+        padding: 1.5rem;
+        margin: 1rem;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <form class="form-container" id="salaryForm" novalidate>
-    <h2>Predicción de Salario</h2>
-
-    <div class="form-group">
-      <label for="designation">DESIGNATION</label>
-      <select id="designation" name="designation" required>
-        <option value="">Selecciona tu puesto</option>
-        <option>Data Engineer</option>
-        <option>Data Scientist</option>
-        <option>Machine Learning Engineer</option>
-        <option>Business Analyst</option>
-      </select>
-      <span class="error-message">Por favor selecciona una opción.</span>
+  <div class="main-container">
+    <div class="header-section">
+      <h1 class="main-title">💰 Predictor de Salarios</h1>
+      <p class="subtitle">Descubre tu potencial salarial basado en IA</p>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">💎</span>
+          <div class="stat-label">Análisis Inteligente</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">⚡</span>
+          <div class="stat-label">Resultados Instantáneos</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">🎯</span>
+          <div class="stat-label">Datos Precisos</div>
+        </div>
+      </div>
     </div>
+    
+    <form class="form-container" id="salaryForm" novalidate>
+      <div class="form-header">
+        <h2 class="form-title">
+          <span>📊</span>
+          Calculadora Inteligente
+        </h2>
+        <p class="form-description">Completa tus datos para obtener una predicción precisa</p>
+      </div>
 
-    <div class="form-group">
-      <label for="tenure">TenureDays</label>
-      <input type="number" id="tenure" name="tenure" placeholder="Días de antigüedad" required min="0" step="1">
-      <span class="error-message">Ingresa un número válido.</span>
-    </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="designation">
+            <span class="field-icon">💼</span>
+            Puesto de Trabajo
+          </label>
+          <select id="designation" name="designation" required>
+            <option value="">Selecciona tu puesto</option>
+            <option>Data Engineer</option>
+            <option>Data Scientist</option>
+            <option>Machine Learning Engineer</option>
+            <option>Business Analyst</option>
+          </select>
+          <span class="error-message">Por favor selecciona una opción.</span>
+        </div>
 
-    <div class="form-group">
-      <label for="age">AGE</label>
-      <input type="number" id="age" name="age" placeholder="Tu edad" required min="18" max="100" step="1">
-      <span class="error-message">Edad entre 18 y 100 años.</span>
-    </div>
+        <div class="form-group">
+          <label for="age">
+            <span class="field-icon">👤</span>
+            Edad
+          </label>
+          <input type="number" id="age" name="age" placeholder="Tu edad" required min="18" max="100" step="1">
+          <span class="error-message">Edad entre 18 y 100 años.</span>
+        </div>
 
-    <div class="form-group">
-      <label for="exp">PAST EXP</label>
-      <input type="number" id="exp" name="exp" placeholder="Años de experiencia" required min="0" max="50" step="0.1">
-      <span class="error-message">Ingresa años de experiencia válidos.</span>
-    </div>
+        <div class="form-group">
+          <label for="tenure">
+            <span class="field-icon">📅</span>
+            Días de Antigüedad
+          </label>
+          <input type="number" id="tenure" name="tenure" placeholder="Días en la empresa" required min="0" step="1">
+          <span class="error-message">Ingresa un número válido.</span>
+        </div>
 
-    <div class="form-group">
-      <label for="leaves">LEAVES USED</label>
-      <input type="number" id="leaves" name="leaves" placeholder="Días de permiso usados" required min="0" step="1">
-      <span class="error-message">Ingresa un número válido.</span>
-    </div>
+        <div class="form-group">
+          <label for="exp">
+            <span class="field-icon">🎯</span>
+            Años de Experiencia
+          </label>
+          <input type="number" id="exp" name="exp" placeholder="Experiencia total" required min="0" max="50" step="0.1">
+          <span class="error-message">Ingresa años de experiencia válidos.</span>
+        </div>
 
-    <button type="submit" class="btn-submit" id="submitBtn">Calcular Salario</button>
-    <div id="result" class="result-box"></div>
-  </form>
+        <div class="form-group">
+          <label for="leaves">
+            <span class="field-icon">🏖️</span>
+            Días de Permiso Usados
+          </label>
+          <input type="number" id="leaves" name="leaves" placeholder="Días de permiso este año" required min="0" step="1">
+          <span class="error-message">Ingresa un número válido.</span>
+        </div>
+      </div>
+
+      <div class="submit-section">
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span>🚀</span>
+          <span>Calcular Mi Salario</span>
+        </button>
+      </div>
+      
+      <div id="result" class="result-box">
+        <div>💎 Tu Salario Estimado</div>
+        <div class="salary-amount" id="salaryAmount"></div>
+        <div>¡Basado en análisis de mercado!</div>
+      </div>
+    </form>
+  </div>
 
   <script>
     const form = document.getElementById('salaryForm');
     const resultDiv = document.getElementById('result');
     const submitBtn = document.getElementById('submitBtn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const salaryAmount = document.getElementById('salaryAmount');
+
+    // Animación de entrada
+    window.addEventListener('load', () => {
+      document.querySelector('.form-container').style.animation = 'slideUp 0.8s ease-out';
+    });
 
     form.addEventListener('submit', async e => {
       e.preventDefault();
       resultDiv.style.display = 'none';
+      
+      // Estado de carga
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Calculando...';
+      submitBtn.innerHTML = '<div class="loading-spinner"></div><span>Calculando...</span>';
+      submitBtn.style.pointerEvents = 'none';
 
       let valid = true;
+      
+      // Validación con efectos visuales
       form.querySelectorAll('select, input').forEach(field => {
         const msg = field.nextElementSibling;
         if (!field.checkValidity()) {
           valid = false;
           field.classList.add('error');
           msg.style.display = 'block';
+          
+          // Scroll suave al primer error
+          if (valid === false) {
+            setTimeout(() => {
+              field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              field.focus();
+            }, 100);
+          }
         } else {
           field.classList.remove('error');
           msg.style.display = 'none';
         }
       });
+
       if (!valid) {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Calcular Salario';
+        submitBtn.innerHTML = '<span>🚀</span><span>Calcular Mi Salario</span>';
+        submitBtn.style.pointerEvents = 'auto';
         return;
       }
 
-      // Monta payload JSON
+      // Simular delay para mejor UX
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       const payload = {
         designation: form.designation.value,
         tenure: Number(form.tenure.value),
@@ -162,21 +552,44 @@
           body: JSON.stringify(payload)
         });
         const json = await res.json();
+        
         if (res.ok) {
-          const salario = Number(json.salary).toLocaleString('es-MX');
-          resultDiv.textContent = `Salario estimado: $${salario}`;
+          const salario = Number(json.salary).toLocaleString('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+            minimumFractionDigits: 0
+          });
+          salaryAmount.textContent = salario;
+          resultDiv.style.background = 'linear-gradient(135deg, var(--secondary), #2d7a3d)';
         } else {
-          resultDiv.textContent = `Error: ${json.error}`;
+          salaryAmount.textContent = `Error: ${json.error}`;
+          resultDiv.style.background = 'linear-gradient(135deg, var(--danger), #c53030)';
         }
-      } catch {
-        resultDiv.textContent = 'Error de conexión.';
+      } catch (error) {
+        salaryAmount.textContent = 'Error de conexión. Intenta nuevamente.';
+        resultDiv.style.background = 'linear-gradient(135deg, var(--danger), #c53030)';
       }
 
+      // Mostrar resultado con animación
       resultDiv.style.display = 'block';
+      resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Restaurar botón
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Calcular Salario';
+      submitBtn.innerHTML = '<span>🚀</span><span>Calcular Mi Salario</span>';
+      submitBtn.style.pointerEvents = 'auto';
+    });
+
+    // Efectos de hover en inputs
+    document.querySelectorAll('input, select').forEach(field => {
+      field.addEventListener('focus', () => {
+        field.parentElement.style.transform = 'scale(1.02)';
+      });
+      
+      field.addEventListener('blur', () => {
+        field.parentElement.style.transform = 'scale(1)';
+      });
     });
   </script>
 </body>
 </html>
-
